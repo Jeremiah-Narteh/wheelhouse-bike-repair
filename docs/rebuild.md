@@ -53,7 +53,7 @@ The phone layout is the default CSS. Wider screens only *add* rules:
 |---|---|---|
 | Phone | default | One column. Cards stacked with flexbox. |
 | Tablet | `min-width: 40em` (about 640px) | Card lists become a 2-column grid. Meet Kwame puts the photo beside the text. More space around sections. |
-| Desktop | `min-width: 64em` (about 1024px) | Side margins become 10% so text doesn't stretch across a wide monitor. Why-us goes to 4 columns (4 items, one row), services to 3 (6 cards, two full rows), reviews stay at 2 (sentences read badly in narrow columns). The form and the visit card sit side by side. |
+| Desktop | `min-width: 64em` (about 1024px) | Side margins become 10% so text doesn't stretch across a wide monitor. Why-us goes to 4 columns (4 items, one row), services to 3 (6 cards, two full rows), reviews stay at 2 (sentences read badly in narrow columns). The booking form sits on the left; the quick question form and the visit card are stacked on the right. |
 
 Breakpoints are in `em` so they follow the visitor's text size. No container has a fixed width: the starter's `width: 960px` is gone, and the form and cards are capped with `max-width: 40em` instead, so they shrink on a phone and keep lines readable on a wide screen. The only fixed pixel width in the stylesheet is the round Meet Kwame photo (160px), which is smaller than any phone screen.
 
@@ -70,8 +70,8 @@ Breakpoints are in `em` so they follow the visitor's text size. No container has
 
 - **Photos that show the work.** The old page had no images at all. The hero shows a mechanic at a workshop stand surrounded by tools, and Meet Kwame shows him working on a bike. Anyone who lands on the page knows within a second that this is a bike repair shop, before reading a word. That answers the hero's question ("Is this a real bike shop?") and goes straight at Kwame's complaint that the site doesn't show he does good work.
 - **Every contact detail is an action.** `tel:` links for calls, `wa.me` links for WhatsApp, a Google Maps link for directions, `mailto:` for email. Call and WhatsApp appear in the header, the hero and the contact section, so they are never far away.
-- **One form instead of two.** It asks for name, phone, bike type and the problem, all required, each with a visible label. `type="tel"` opens the number keypad, and `autocomplete` lets the phone fill in the name and number.
-- **The form sends to WhatsApp.** [`assets/js/booking.js`](../assets/js/booking.js) stops the browser's default submit (`event.preventDefault()`), trims every answer, and stops with the browser's own "please fill in this field" message if any answer is empty or only spaces (`required` alone lets spaces through). Only then does it build a WhatsApp message, so the request reaches Kwame on the channel he already uses, with a number he can reply to.
+- **Two forms, each with one clear job.** The old site had a booking form and a "Send Us a Message" form. They do different jobs: one is for a repair the visitor wants done, the other for a quick question (prices, parts in stock, "can you fix this?"). Each now has its own heading, "Book a repair" and "Quick question", so the difference is obvious. The booking form asks for name, phone, bike type and the problem. The quick question form only asks for a name and the question, because someone who isn't ready to book shouldn't have to fill in booking details. Every field is required and has a visible label. `type="tel"` opens the number keypad, and `autocomplete` lets the phone fill in the name and number.
+- **Both forms send to WhatsApp.** [`assets/js/booking.js`](../assets/js/booking.js) stops the browser's default submit (`event.preventDefault()`) and trims every answer (`required` alone lets spaces through). One shared function, `checkFields`, checks both forms: it shows a message under each empty field and moves the cursor to the first one. Only then does it build a WhatsApp message ("I'd like to book a repair" or "I have a question"), so the message reaches Kwame on the channel he already uses, with a number he can reply to.
 - **Kept content.** The old site's copy was specific and honest: price before work, walk-ins welcome, same-day basic repairs, Monday to Saturday 8am to 5:30pm, opened 2019, Shop 4 in Adum. All of it was kept and given clear wording.
 - **One time estimate.** "Within an hour or two" for basic repairs everywhere, fixing Problem 9.
 - **The GH₵10 a day storage fee** sits in the FAQ answer about overnight repairs. That is when a customer decides whether to leave the bike. A cost they only learn about when they collect it would break the "no surprises" promise.
@@ -86,9 +86,9 @@ Breakpoints are in `em` so they follow the visitor's text size. No container has
 | 1. Not responsive | Viewport meta tag, mobile-first CSS, flexbox and grid, `em` breakpoints, no fixed container widths |
 | 2. No proof | Hero photo, why-us list, reviews section, Meet Kwame with photo, current year |
 | 3. Contact is not action | `tel:`, WhatsApp, Maps and `mailto:` links; working menu links to section `id`s |
-| 4. Forms don't work | One labelled form, correct input types, required fields, empty answers blocked, sends to WhatsApp |
+| 4. Forms don't work | Two labelled forms with separate jobs (booking, quick question), correct input types, required fields, empty answers blocked, both send to WhatsApp |
 | 5. Section outside the container | Contact is a normal `section` inside `main`, styled like the others |
-| 6. Specificity and inconsistent styles | One stylesheet, no inline styles, no ID selectors for styling (except the form and the contact grid), every class styled, all colours, sizes and gaps from the design system |
+| 6. Specificity and inconsistent styles | One stylesheet, no inline styles, no ID selectors for styling (except the two forms and the FAQ and contact grids), every class styled, all colours, sizes and gaps from the design system |
 | 7. Non-semantic markup | Landmarks, heading order, lists, `blockquote`, `address`, `details` |
 | 8. Hard to read | 16px body text; every text colour pair passes 4.5 : 1 |
 | 9. Inconsistent content | One time estimate, one Prices link, © 2026 |

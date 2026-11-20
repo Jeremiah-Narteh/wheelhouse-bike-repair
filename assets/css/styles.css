@@ -14,6 +14,7 @@
   --color-action: #f1c40f;
   --color-on-action: #1a1a1a;
   --color-border: #d6d6d6;
+  --color-error: #c62828;
 
   /* ---------- TEXT ---------- */
   --text-sm: 0.875rem;
@@ -119,10 +120,16 @@ button {
   text-decoration: none;
   font-weight: var(--weight-bold);
   border-radius: var(--radius);
+  border: 2px solid transparent;
+}
+
+.button-secondary {
+  background-color: transparent;
+  color: inherit;
+  border-color: var(--color-action);
 }
 
 button.button {
-  border: 0;
   cursor: pointer;
 }
 
@@ -169,6 +176,7 @@ button.button {
   gap: var(--space-2);
   padding: var(--space-3) var(--space-2);
   background-color: var(--color-brand);
+  color: var(--color-surface);
 }
 
 .site-logo {
@@ -192,6 +200,12 @@ button.button {
 
 .site-nav {
   flex-basis: 100%;
+  border-top: 1px solid rgb(255 255 255 / 0.3);
+  padding-top: var(--space-2);
+}
+
+.site-header :focus-visible {
+  outline-color: var(--color-surface);
 }
 
 .site-nav ul {
@@ -206,15 +220,136 @@ button.button {
 .site-nav a {
   color: var(--color-on-brand);
   font-weight: var(--weight-bold);
-  text-decoration: none;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.25em;
   display: inline-block;
   padding: var(--space-1) 0;
+  text-decoration-color: var(--color-action);
 }
 
 .site-nav a:hover {
-  text-decoration: underline;
+  color: var(--color-action);
 }
 
+/* ---------- Phone menu (hamburger) ----------
+   Everything below only applies on phones AND once nav.js has run
+   (it adds .has-menu to the header). Without JavaScript, or on
+   wider screens, the header keeps the layout above. */
+
+/* Icon-only menu button. 28px icon + 8px padding each side
+   = 44px, a comfortable tap target. */
+.nav-toggle {
+  color: var(--color-on-brand);
+  background-color: transparent;
+  border: 0;
+  padding: var(--space-1);
+  cursor: pointer;
+  line-height: 0;
+}
+
+.nav-toggle svg {
+  display: block;
+}
+
+/* Show the hamburger while closed, the X while open. */
+.nav-toggle .icon-close,
+.nav-toggle[aria-expanded="true"] .icon-open {
+  display: none;
+}
+
+.nav-toggle[aria-expanded="true"] .icon-close {
+  display: block;
+}
+
+@media (max-width: 39.99em) {
+  /* Header as a grid:  [ logo + tagline ]  [ ☰ ]
+                        [   Call   WhatsApp   ]   */
+  .site-header.has-menu {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "brand   nav"
+      "actions actions";
+    align-items: start;
+  }
+
+  .has-menu .site-brand {
+    grid-area: brand;
+  }
+
+  .has-menu .site-nav {
+    grid-area: nav;
+    border-top: 0;
+    padding-top: 0;
+  }
+
+  .has-menu .header-actions {
+    grid-area: actions;
+    justify-content: center;
+  }
+
+  /* The header is the anchor for the drop-down menu
+     (position: relative), so the menu can sit right below it. */
+  .site-header.has-menu {
+    position: relative;
+  }
+
+  /* Menu closed: links hidden. */
+  .has-menu #nav-list {
+    display: none;
+  }
+
+  /* Menu open: a drop-down panel just below the header, full
+     width, only as tall as the links need. */
+  .has-menu .nav-toggle[aria-expanded="true"] + #nav-list {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    gap: 0;
+    position: absolute;
+    top: 100%; /* starts at the bottom edge of the header */
+    left: 0;
+    right: 0;
+    padding: 0 var(--space-2) var(--space-2);
+    background-color: var(--color-brand);
+    border-top: 1px solid rgb(255 255 255 / 0.3);
+    /* very short phones: scroll inside the menu */
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+
+  /* A thin line between links, like a list. */
+  .has-menu #nav-list li {
+    border-bottom: 1px solid rgb(255 255 255 / 0.2);
+  }
+
+  /* Whole row is tappable, not just the word. */
+  .has-menu #nav-list a {
+    display: block;
+    padding: var(--space-2) 0;
+    font-size: var(--text-lg);
+  }
+
+  /* Menu open: dim the page below. The header (with the menu
+     inside it) is lifted above the dimmed layer so it stays bright. */
+  body.menu-open::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 5;
+    background-color: rgb(0 0 0 / 0.5);
+  }
+
+  body.menu-open .site-header {
+    z-index: 6;
+  }
+
+  /* Stop the page behind the menu from scrolling. */
+  body.menu-open {
+    overflow: hidden;
+  }
+}
 /* ---------- All sections ---------- */
 
 section {
@@ -305,6 +440,7 @@ details {
   background-color: var(--color-surface);
   margin: 0 0 var(--space-1);
   border-radius: var(--radius);
+  max-width: 70ch;
 }
 
 summary {
@@ -350,13 +486,25 @@ details p:last-child {
 
 /* ---------- Contact ---------- */
 
-#booking-form {
+/* Both forms share one look, so they read as a matching set. */
+#booking-form,
+#question-form {
   max-width: 40em;
-  margin-bottom: var(--space-4);
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   padding: var(--space-3) var(--space-2);
+}
+
+#booking-form {
+  margin-bottom: var(--space-4);
+}
+
+/* Quick question form stacked above the visit card. */
+.contact-side {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
 }
 
 .form-note {
@@ -388,6 +536,25 @@ textarea {
   resize: vertical;
 }
 
+/* Error message under each form field (filled in by booking.js). */
+.field-error {
+  display: block;
+  margin-top: var(--space-1);
+  color: var(--color-error);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-bold);
+}
+
+/* Red border on a field the visitor needs to fix. */
+[aria-invalid="true"] {
+  border-color: var(--color-error);
+}
+
+[aria-invalid="true"]:focus-visible {
+  outline: 2px solid var(--color-error);
+  outline-offset: 1px;
+}
+
 .visit-card {
   background-color: var(--color-surface);
   border-left: 4px solid var(--color-brand);
@@ -401,11 +568,23 @@ address {
   margin-bottom: var(--space-2);
 }
 
+/* Buttons in a tidy grid:  [  Call  ] [WhatsApp]
+                            [    Directions     ]
+   Call and WhatsApp share a row in equal halves (both are ways to
+   contact Kwame); Directions gets its own full-width row. */
 .contact-actions {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: var(--space-2);
   margin: 0;
+}
+
+.contact-actions .button {
+  text-align: center;
+}
+
+.contact-actions .directions-link {
+  grid-column: 1 / -1; /* span from the first to the last column */
 }
 
 /* ---------- Footer ---------- */
@@ -438,6 +617,11 @@ address {
   .site-header {
     padding-left: var(--space-4);
     padding-right: var(--space-4);
+  }
+
+  /* Enough room for the links, so no menu button needed. */
+  .nav-toggle {
+    display: none;
   }
 
   .why-list,
@@ -488,9 +672,11 @@ address {
 
   #contact {
     display: grid;
-    grid-template-columns: 3fr 2fr;
-    column-gap: var(--space-4);
-    align-items: start;
+    /* equal columns, matching the two-column FAQ above */
+    grid-template-columns: 1fr 1fr;
+    column-gap: var(--space-3);
+    /* both cards the same height, so they look like a pair */
+    align-items: stretch;
   }
 
   #contact h2 {
@@ -499,5 +685,103 @@ address {
 
   #booking-form {
     margin-bottom: 0;
+  }
+
+  /* Right column: same gap as between the columns. The visit card
+     grows to fill any spare height, so both columns end level. */
+  .contact-side {
+    gap: var(--space-3);
+  }
+
+  .contact-side .visit-card {
+    flex-grow: 1;
+  }
+
+  /* FAQ, Meet Kwame and Contact now fill the same width as the
+     sections above, so every section's right edge lines up.
+     The 40em / 70ch caps from the phone styles are lifted here. */
+
+  /* FAQ: two columns of cards, like the other card grids.
+     Two columns also keep each line short enough to read easily. */
+  #faq {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    /* row gap, then column gap (column gap matches #contact) */
+    gap: var(--space-2) var(--space-3);
+    align-items: start;
+  }
+
+  #faq h2 {
+    grid-column: 1 / -1;
+  }
+
+  #faq details {
+    margin: 0;
+  }
+
+  /* Meet Kwame: card is full width, but the text keeps a
+     comfortable line length. */
+  .about-card {
+    max-width: none;
+  }
+
+  .about-card p {
+    max-width: 65ch;
+  }
+
+  /* Contact: forms and visit card fill their grid columns. */
+  #booking-form,
+  #question-form,
+  .visit-card {
+    max-width: none;
+  }
+}
+
+/* =========================================================
+   HIGH-CONTRAST MODE (Windows contrast themes)
+   These themes remove background colours, so anything shown
+   only by its background (buttons, cards, header) vanishes.
+   Borders survive, so add them here. Normal view is unchanged.
+   ========================================================= */
+@media (forced-colors: active) {
+  /* Buttons: give them an edge so they look clickable. */
+  .button,
+  button.button {
+    border: 2px solid ButtonText;
+  }
+
+  /* Header and footer: show where they start and end. */
+  .site-header {
+    border-bottom: 2px solid CanvasText;
+  }
+
+  .site-footer {
+    border-top: 2px solid CanvasText;
+  }
+
+  /* Phone menu (phones only): colours are replaced in this mode,
+     so give the drop-down a visible bottom edge. */
+  @media (max-width: 39.99em) {
+    .has-menu #nav-list {
+      border-bottom: 2px solid CanvasText;
+    }
+  }
+
+  /* Cards and panels: show where each one starts and ends. */
+  .hero,
+  .why-item,
+  .service-card,
+  .review-card,
+  .about-card,
+  #booking-form,
+  #question-form,
+  .visit-card {
+    border: 1px solid CanvasText;
+  }
+
+  /* Error fields: colour is gone, so use shape instead. */
+  [aria-invalid="true"] {
+    border-width: 3px;
+    border-style: dashed;
   }
 }

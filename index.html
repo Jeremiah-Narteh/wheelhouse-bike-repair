@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="assets/css/styles.css" />
 
     <script src="assets/js/booking.js" defer></script>
+    <script src="assets/js/nav.js" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to main content</a>
@@ -26,12 +27,60 @@
       </div>
 
       <div class="header-actions">
-        <a class="button" href="tel:+233322000000">Call</a>
-        <a class="button" href="https://wa.me/233244000001">WhatsApp</a>
+        <a class="button call-link" href="tel:+233322000000">Call</a>
+        <a class="button button-secondary" href="https://wa.me/233244000001"
+          >WhatsApp</a
+        >
       </div>
 
       <nav class="site-nav" aria-label="Main">
-        <ul>
+        <!-- Menu button for phones. It starts hidden; nav.js shows it.
+             Without JavaScript the links simply stay visible.
+             aria-label gives the icon-only button a name ("Menu");
+             aria-expanded (set by nav.js) says if it's open or closed. -->
+        <button
+          class="nav-toggle"
+          type="button"
+          aria-controls="nav-list"
+          aria-label="Menu"
+          hidden
+        >
+          <!-- Hamburger icon (shown while closed) -->
+          <svg
+            class="icon-open"
+            viewBox="0 0 24 24"
+            width="28"
+            height="28"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M3 6h18M3 12h18M3 18h18"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+          </svg>
+          <!-- X icon (shown while open) -->
+          <svg
+            class="icon-close"
+            viewBox="0 0 24 24"
+            width="28"
+            height="28"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <path
+              d="M6 6l12 12M18 6L6 18"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+          </svg>
+        </button>
+        <ul id="nav-list">
           <li><a href="#services">Prices</a></li>
           <li><a href="#faq">Questions</a></li>
           <li><a href="#about">About</a></li>
@@ -56,7 +105,7 @@
           We quote the price before any work starts. Walk-ins welcome, Monday to
           Saturday.
         </p>
-        <a class="button" href="tel:+233322000000">Call now</a>
+        <a class="button call-link" href="tel:+233322000000">Call now</a>
       </section>
 
       <!-- SECTION 3: WHY CHOOSE US. "Why this shop and not the next one?" -->
@@ -313,16 +362,26 @@
 
       <!-- SECTION 8: BOOK / CONTACT. "How do I book and find the shop?" -->
       <section id="contact" aria-labelledby="contact-title">
-        <h2 id="contact-title">Book or visit us</h2>
+        <h2 id="contact-title">Book, ask or visit us</h2>
 
-        <form action="#" method="post" id="booking-form">
+        <!-- Form 1: BOOKING. For a repair the visitor wants done. -->
+        <form
+          action="#"
+          method="post"
+          id="booking-form"
+          aria-labelledby="booking-title"
+          novalidate
+        >
+          <h3 id="booking-title">Book a repair</h3>
+
           <p class="form-note">
             Fields marked <span class="required">*</span> are required.
           </p>
 
           <p>
             <label for="name"
-              >Your name <span class="required" aria-hidden="true">*</span></label
+              >Your name
+              <span class="required" aria-hidden="true">*</span></label
             >
             <input
               type="text"
@@ -330,8 +389,10 @@
               name="name"
               autocomplete="name"
               placeholder="e.g. Ama Owusu"
+              aria-describedby="name-error"
               required
             />
+            <span class="field-error" id="name-error"></span>
           </p>
 
           <p>
@@ -345,15 +406,23 @@
               name="phone"
               autocomplete="tel"
               placeholder="e.g. 024 123 4567"
+              aria-describedby="phone-error"
               required
             />
+            <span class="field-error" id="phone-error"></span>
           </p>
 
           <p>
             <label for="bike-type"
-              >Bike type <span class="required" aria-hidden="true">*</span></label
+              >Bike type
+              <span class="required" aria-hidden="true">*</span></label
             >
-            <select id="bike-type" name="bike-type" required>
+            <select
+              id="bike-type"
+              name="bike-type"
+              aria-describedby="bike-type-error"
+              required
+            >
               <option value="">Choose one</option>
               <option value="road">Road bike</option>
               <option value="mountain">Mountain bike</option>
@@ -362,6 +431,7 @@
               <option value="kids">Child's bike</option>
               <option value="other">Other / not sure</option>
             </select>
+            <span class="field-error" id="bike-type-error"></span>
           </p>
 
           <p>
@@ -374,36 +444,116 @@
               name="need"
               rows="4"
               placeholder="e.g. The chain keeps falling off when I change gear"
+              aria-describedby="need-error"
               required
             ></textarea>
+            <span class="field-error" id="need-error"></span>
           </p>
 
-          <button class="button" type="submit">Send booking request</button>
+          <p class="form-note" id="submit-note">
+            This opens WhatsApp with your details filled in. Press send in
+            WhatsApp to finish. No WhatsApp? Call us on
+            <a href="tel:+233322000000">032 200 0000</a>.
+          </p>
+
+          <button class="button" type="submit" aria-describedby="submit-note">
+            Send booking request via WhatsApp
+          </button>
         </form>
 
-        <div class="visit-card">
-          <h3>Visit the workshop</h3>
+        <!-- Right-hand column on desktop: quick question + visit card -->
+        <div class="contact-side">
+          <!-- Form 2: QUICK QUESTION. For prices, parts, "can you fix...?" -->
+          <form
+            action="#"
+            method="post"
+            id="question-form"
+            aria-labelledby="question-title"
+            novalidate
+          >
+            <h3 id="question-title">Quick question</h3>
 
-          <address>
-            Wheelhouse Bike Repair<br />
-            Shop 4, Adum Commercial Area, Kumasi<br />
-            <a href="mailto:wheelhouse@email.com">wheelhouse@email.com</a>
-          </address>
+            <p class="form-note">
+              Not ready to book? Ask about prices, parts in stock or anything
+              else. Fields marked <span class="required">*</span> are required.
+            </p>
 
-          <p class="visit-hours">
-            <strong>Open</strong> Monday to Saturday, 8am to 5:30pm.<br />
-            Closed Sunday.
-          </p>
+            <p>
+              <label for="q-name"
+                >Your name
+                <span class="required" aria-hidden="true">*</span></label
+              >
+              <input
+                type="text"
+                id="q-name"
+                name="q-name"
+                autocomplete="name"
+                placeholder="e.g. Ama Owusu"
+                aria-describedby="q-name-error"
+                required
+              />
+              <span class="field-error" id="q-name-error"></span>
+            </p>
 
-          <p class="contact-actions">
-            <a class="button" href="tel:+233322000000">Call</a>
-            <a class="button" href="https://wa.me/233244000001">WhatsApp</a>
-            <a
+            <p>
+              <label for="question"
+                >Your question
+                <span class="required" aria-hidden="true">*</span></label
+              >
+              <textarea
+                id="question"
+                name="question"
+                rows="3"
+                placeholder="e.g. Do you have 26-inch inner tubes in stock?"
+                aria-describedby="question-error"
+                required
+              ></textarea>
+              <span class="field-error" id="question-error"></span>
+            </p>
+
+            <p class="form-note" id="question-note">
+              This opens WhatsApp with your question filled in. Press send in
+              WhatsApp to finish. No WhatsApp? Call us on
+              <a href="tel:+233322000000">032 200 0000</a>.
+            </p>
+
+            <button
               class="button"
-              href="https://www.google.com/maps/search/?api=1&amp;query=Adum+Commercial+Area+Kumasi"
-              >Directions</a
+              type="submit"
+              aria-describedby="question-note"
             >
-          </p>
+              Send question via WhatsApp
+            </button>
+          </form>
+
+          <div class="visit-card">
+            <h3>Visit the workshop</h3>
+
+            <address>
+              Wheelhouse Bike Repair<br />
+              Shop 4, Adum Commercial Area, Kumasi<br />
+              <a href="mailto:wheelhouse@email.com">wheelhouse@email.com</a>
+            </address>
+
+            <p class="visit-hours">
+              <strong>Open</strong> Monday to Saturday, 8am to 5:30pm.<br />
+              Closed Sunday.
+            </p>
+
+            <p class="contact-actions">
+              <a class="button call-link" href="tel:+233322000000">Call</a>
+              <a
+                class="button button-secondary"
+                href="https://wa.me/233244000001"
+                >WhatsApp</a
+              >
+              <a
+                class="button directions-link"
+                href="https://www.google.com/maps/search/?api=1&amp;query=Adum+Commercial+Area+Kumasi"
+                >Directions</a
+              >
+            </p>
+          </div>
         </div>
       </section>
     </main>
