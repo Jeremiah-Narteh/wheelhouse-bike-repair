@@ -9,17 +9,18 @@
 
 const shopWhatsApp = "https://wa.me/233244000001?text=";
 
-/* Checks a list of fields. Shared by both forms, so the checking
+/* Checks a form's fields. Shared by both forms, so the checking
    rules only live in one place.
-   - fields:   the inputs to check
-   - messages: one message per field, keyed by the field's id
-   Shows a message under each empty field, marks it aria-invalid,
+   - checks: one entry per field: { field, errorSpan, message }
+   Shows the message under each empty field, marks it aria-invalid,
    and moves the cursor to the first problem.
    Returns true when every field is filled in. */
-function checkFields(fields, messages) {
+function checkFields(checks) {
   let firstProblem = null;
 
-  for (const field of fields) {
+  for (const check of checks) {
+    const field = check.field;
+
     // "required" accepts a field that holds only spaces, so trim
     // text first and treat a blank answer as empty. (A <select>
     // can't hold spaces, so it is skipped.)
@@ -27,11 +28,13 @@ function checkFields(fields, messages) {
       field.value = field.value.trim();
     }
 
-    const errorSpan = document.querySelector("#" + field.id + "-error");
-
     if (!field.checkValidity()) {
-      // Show the message and mark the field as wrong.
-      errorSpan.textContent = messages[field.id];
+      // Show the message and mark the field as wrong. If the message
+      // space is missing from the HTML, the field is still marked and
+      // focused; only the written message is skipped.
+      if (check.errorSpan) {
+        check.errorSpan.textContent = check.message;
+      }
       field.setAttribute("aria-invalid", "true");
 
       // Remember the first wrong field so we can send the cursor there.
@@ -40,7 +43,9 @@ function checkFields(fields, messages) {
       }
     } else {
       // Field is fine: clear any old message.
-      errorSpan.textContent = "";
+      if (check.errorSpan) {
+        check.errorSpan.textContent = "";
+      }
       field.removeAttribute("aria-invalid");
     }
   }
@@ -53,72 +58,90 @@ function checkFields(fields, messages) {
   return true;
 }
 
-/* ---------- Form 1: booking ---------- */
+/* Sets up one form. Runs once, when the page loads.
+   - formId:        the form's id
+   - fieldMessages: { fieldId: "message if empty" }, in page order
+   - buildMessage:  turns the fields into the WhatsApp message
+   Every field and its message space is looked up here, once, not
+   again on every submit. */
+function setUpWhatsAppForm(formId, fieldMessages, buildMessage) {
+  const form = document.querySelector("#" + formId);
+  if (!form) {
+    return;
+  }
 
-const bookingForm = document.querySelector("#booking-form");
+  const fields = {}; // fields by id, for buildMessage
+  const checks = []; // fields in page order, for checkFields
 
-if (bookingForm) {
-  bookingForm.addEventListener("submit", function (event) {
-    event.preventDefault();
-
-    const nameField = document.querySelector("#name");
-    const phoneField = document.querySelector("#phone");
-    const bikeSelect = document.querySelector("#bike-type");
-    const needField = document.querySelector("#need");
-
-    // One clear message per field (tells the visitor how to fix it).
-    const allFilledIn = checkFields(
-      [nameField, phoneField, bikeSelect, needField],
-      {
-        name: "Please enter your name",
-        phone: "Please enter your contact number",
-        "bike-type": "Please select a bike type",
-        need: "Please enter what's wrong with the bike",
-      }
-    );
-
-    if (!allFilledIn) {
+  for (const id of Object.keys(fieldMessages)) {
+    const field = document.querySelector("#" + id);
+    if (!field) {
+      // The HTML doesn't match this script: leave the form alone
+      // rather than crash.
       return;
     }
 
-    const bikeType = bikeSelect.options[bikeSelect.selectedIndex].text;
+    fields[id] = field;
+    checks.push({
+      field: field,
+      errorSpan: document.querySelector("#" + id + "-error"),
+      message: fieldMessages[id],
+    });
+  }
 
-    const message =
-      "Hello Wheelhouse, I'd like to book a repair.\n" +
-      `Name: ${nameField.value}\n` +
-      `Phone: ${phoneField.value}\n` +
-      `Bike type: ${bikeType}\n` +
-      `Need: ${needField.value}`;
+  form.addEventListener("submit", function (event) {
+    event.preventDefault();
 
-    window.location.href = shopWhatsApp + encodeURIComponent(message);
+    if (!checkFields(checks)) {
+      return;
+    }
+
+    window.location.href =
+      shopWhatsApp + encodeURIComponent(buildMessage(fields));
   });
 }
+
+/* ---------- Form 1: booking ---------- */
+
+setUpWhatsAppForm(
+  "booking-form",
+  {
+    name: "Please enter your name",
+    phone: "Please enter your contact number",
+    "bike-type": "Please select a bike type",
+    need: "Please enter what's wrong with the bike",
+  },
+  function (fields) {
+    // Send the words the visitor chose ("Child's bike"), not the code
+    // ("kids"). checkFields has already made sure a bike type is
+    // chosen; the fallback to the code is just a safety net.
+    const bikeSelect = fields["bike-type"];
+    const chosenOption = bikeSelect.selectedOptions[0];
+    const bikeType = chosenOption ? chosenOption.text : bikeSelect.value;
+
+    return (
+      "Hello Wheelhouse, I'd like to book a repair.\n" +
+      `Name: ${fields.name.value}\n` +
+      `Phone: ${fields.phone.value}\n` +
+      `Bike type: ${bikeType}\n` +
+      `Need: ${fields.need.value}`
+    );
+  }
+);
 
 /* ---------- Form 2: quick question ---------- */
 
-const questionForm = document.querySelector("#question-form");
-
-if (questionForm) {
-  questionForm.addEventListener("submit", function (event) {
-    event.preventDefault();
-
-    const nameField = document.querySelector("#q-name");
-    const questionField = document.querySelector("#question");
-
-    const allFilledIn = checkFields([nameField, questionField], {
-      "q-name": "Please enter your name",
-      question: "Please type your question",
-    });
-
-    if (!allFilledIn) {
-      return;
-    }
-
-    const message =
+setUpWhatsAppForm(
+  "question-form",
+  {
+    "q-name": "Please enter your name",
+    question: "Please type your question",
+  },
+  function (fields) {
+    return (
       "Hello Wheelhouse, I have a question.\n" +
-      `Name: ${nameField.value}\n` +
-      `Question: ${questionField.value}`;
-
-    window.location.href = shopWhatsApp + encodeURIComponent(message);
-  });
-}
+      `Name: ${fields["q-name"].value}\n` +
+      `Question: ${fields.question.value}`
+    );
+  }
+);

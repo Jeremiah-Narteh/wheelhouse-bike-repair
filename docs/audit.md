@@ -36,8 +36,8 @@ Contrast ratios were calculated with the WCAG 2 relative-luminance formula.
 | Required fields | Pass. `required` attribute, and the script also rejects answers that are only spaces. The visual * is hidden from screen readers so it isn't announced twice. |
 | Keyboard use | Pass. Visible focus outline on everything; skip link; FAQ works with Tab and Enter. |
 | Repeated link text | Pass. The six "Ask on WhatsApp" links each have a unique `aria-label`. |
-| Image alt text | **Partial.** Alt text describes what is in each photo, but the photos are stand-ins. It must be rewritten for Kwame's real photos. |
-| Yellow buttons on white or grey | **Minor issue.** The button text passes (10.5 : 1), but the yellow shape is only 1.7 : 1 against white (1.5 : 1 against the grey cards), below the 3 : 1 suggested for interface shapes. Low priority, because the words make the button clear. |
+| Image alt text | **Pass, provisional.** The photos are stand-ins, so the alt text is neutral ("A mechanic repairing a bike on a workshop stand…") and does not claim the photo shows Kwame or his shop. It must be rewritten when Kwame's real photos go in. |
+| Yellow buttons on white or grey | **Fixed (after grading feedback).** The yellow shape was only 1.7 : 1 against white (1.5 : 1 against the grey cards), below the 3 : 1 that 1.4.11 Non-text Contrast needs for a control's edge. Buttons in the page body now have a darker gold edge (`#9a7d0a`): 3.9 : 1 on white, 3.6 : 1 on grey. Header buttons sit on navy, where the yellow already stands out, so they are unchanged. |
 
 ## Visual consistency
 

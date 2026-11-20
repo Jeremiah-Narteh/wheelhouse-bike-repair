@@ -1,6 +1,6 @@
 /* =========================================================
    NAV MENU (phones)
-   Shows the hamburger button and opens/closes a full-screen
+   Shows the hamburger button and opens/closes a drop-down
    menu. The CSS reads aria-expanded to decide whether the
    links are shown, so screen readers and the screen agree.
    On tablet and desktop the CSS hides the button and always
@@ -9,8 +9,9 @@
 
 const navToggle = document.querySelector(".nav-toggle");
 const siteHeader = document.querySelector(".site-header");
+const siteNav = document.querySelector(".site-nav");
 
-if (navToggle && siteHeader) {
+if (navToggle && siteHeader && siteNav) {
   // JavaScript is running, so the menu can work: switch the header
   // to the phone menu layout, show the button, start closed.
   siteHeader.classList.add("has-menu");
@@ -23,11 +24,37 @@ if (navToggle && siteHeader) {
   // (logo, Call, WhatsApp) stays bright and usable.
   const behindMenu = document.querySelectorAll(".skip-link, main, footer");
 
+  // Tapping anywhere outside the nav (the dimmed page) closes the menu.
+  function closeOnOutsideClick(event) {
+    if (!siteNav.contains(event.target)) {
+      setMenuOpen(false);
+    }
+  }
+
+  // Escape closes the menu and puts focus back on the button,
+  // so keyboard users don't lose their place.
+  function closeOnEscape(event) {
+    if (event.key === "Escape") {
+      setMenuOpen(false);
+      navToggle.focus();
+    }
+  }
+
   function setMenuOpen(isOpen) {
     navToggle.setAttribute("aria-expanded", String(isOpen));
     document.body.classList.toggle("menu-open", isOpen);
     for (const element of behindMenu) {
       element.inert = isOpen;
+    }
+
+    // The page-wide click and Escape listeners are only needed while
+    // the menu is open: add them on open, remove them on close.
+    if (isOpen) {
+      document.addEventListener("click", closeOnOutsideClick);
+      document.addEventListener("keydown", closeOnEscape);
+    } else {
+      document.removeEventListener("click", closeOnOutsideClick);
+      document.removeEventListener("keydown", closeOnEscape);
     }
   }
 
@@ -41,36 +68,18 @@ if (navToggle && siteHeader) {
   });
 
   // After choosing a link, close the menu so the section is visible.
-  const navLinks = document.querySelectorAll(".site-nav a");
+  const navLinks = siteNav.querySelectorAll("a");
   for (const link of navLinks) {
     link.addEventListener("click", function () {
       setMenuOpen(false);
     });
   }
 
-  // Tapping the dimmed page below the menu closes it.
-  // (Anything outside the nav counts as "outside".)
-  const siteNav = document.querySelector(".site-nav");
-  document.addEventListener("click", function (event) {
-    if (isMenuOpen() && !siteNav.contains(event.target)) {
-      setMenuOpen(false);
-    }
-  });
-
-  // Escape closes the menu and puts focus back on the button,
-  // so keyboard users don't lose their place.
-  document.addEventListener("keydown", function (event) {
-    if (event.key === "Escape" && isMenuOpen()) {
-      setMenuOpen(false);
-      navToggle.focus();
-    }
-  });
-
   // If the screen gets wider (e.g. phone turned sideways) while the
   // menu is open, close it so the page isn't left inert.
   const wideScreen = window.matchMedia("(min-width: 40em)");
   wideScreen.addEventListener("change", function () {
-    if (wideScreen.matches) {
+    if (wideScreen.matches && isMenuOpen()) {
       setMenuOpen(false);
     }
   });

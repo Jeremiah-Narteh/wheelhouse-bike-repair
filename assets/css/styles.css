@@ -12,6 +12,7 @@
   --color-brand: #2c3e50;
   --color-on-brand: #ffffff;
   --color-action: #f1c40f;
+  --color-action-edge: #9a7d0a; /* darker gold for button edges on light backgrounds */
   --color-on-action: #1a1a1a;
   --color-border: #d6d6d6;
   --color-error: #c62828;
@@ -127,6 +128,15 @@ button {
   background-color: transparent;
   color: inherit;
   border-color: var(--color-action);
+}
+
+/* On the light page, yellow alone is too faint to show the button's
+   edge (1.7 : 1 on white, 1.5 : 1 on the grey cards). WCAG 1.4.11
+   needs 3 : 1, so buttons in the page body get a darker gold edge
+   (3.9 : 1 on white, 3.6 : 1 on grey). In the navy header the
+   yellow already stands out, so header buttons are unchanged. */
+main .button {
+  border-color: var(--color-action-edge);
 }
 
 button.button {

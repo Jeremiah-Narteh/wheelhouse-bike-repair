@@ -92,7 +92,7 @@ Full detail: [docs/audit.md](docs/audit.md). Checked against semantic HTML, base
 
 **Priorities, in order:** (1) phone layout and one-tap contact, because nothing else matters if the visitor can't read or call; (2) trust signals, Kwame's own complaint; (3) semantic structure; (4) accessibility; (5) visual consistency, mostly handled by the design system.
 
-**Result:** semantic HTML passes. Every text pair passes 4.5 : 1 (lowest 8.1 : 1). The audit found and fixed 8 issues, including an overclaim, 7 MB photos and blank form answers. The yellow button shape is faint against white (1.7 : 1), which is minor because the text is clear.
+**Result:** semantic HTML passes. Every text pair passes 4.5 : 1 (lowest 8.1 : 1). The audit found and fixed 8 issues, including an overclaim, 7 MB photos and blank form answers. The yellow button shape was faint against white (1.7 : 1); buttons in the page body now have a darker gold edge (3.9 : 1), which passes 1.4.11.
 
 **Still open, in order of importance to Kwame:** the sample reviews must be replaced with real ones or removed; the stand-in photos must be replaced with his own; the phone numbers and payment methods need his confirmation.
 
@@ -117,6 +117,13 @@ It ends on "My bike type is:" so the visitor types one or two words. Custom Buil
 **Accessibility.** Each link has an `aria-label` naming its service ("Ask on WhatsApp about Brake Overhaul"), starting with the visible words so voice control still works.
 
 **Why not a "what's wrong with my bike?" quiz?** More JavaScript, more screens, more decisions for a stressed visitor. This is plain links.
+
+---
+
+## Known limitations
+
+- **Photos and alt text are provisional.** Both photos are stand-ins, not Wheelhouse. Their alt text is kept neutral ("A mechanic working on a mountain bike") so it doesn't claim to show Kwame or his shop. When Kwame's real photos go in, the alt text must be rewritten to describe them.
+- **Phone testing was done in a browser, not on a real phone.** The phone layout was checked in Chrome's device mode (DevTools). The brief's customer used a real phone with one hand, and one-thumb tapping on a real device has not been tested yet.
 
 ---
 
